@@ -13,6 +13,7 @@ public class EmbeddedPostgresDockerTest {
             .setContainerImage("postgres:9.5")
             .setDatabaseName("postgres")
             .setPostgresPassword("")
+            .setExposedPort(9547)
             .build();
 
     @Test
@@ -21,8 +22,8 @@ public class EmbeddedPostgresDockerTest {
         postgres.executeSQL("CREATE TABLE test (id INT PRIMARY KEY, key VARCHAR(256));");
 
         TestDao testDao = new TestDao(
-                postgres.getPostgresHost(),
-                postgres.getPostgresPort(),
+                postgres.getExposedHost(),
+                postgres.getExposedPort(),
                 postgres.getDatabaseName(),
                 postgres.getPostgresUser(),
                 postgres.getPostgresPassword());

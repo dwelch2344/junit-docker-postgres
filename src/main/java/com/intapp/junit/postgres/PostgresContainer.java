@@ -6,8 +6,9 @@ class PostgresContainer {
     private String postgresUser;
     private String postgresPassword;
     private String databaseName;
-    private String postgresHost;
+    private String exposedHost;
     private int postgresPort;
+    private int exposedPort;
 
     public String getContainerImage() {
         return containerImage;
@@ -41,12 +42,12 @@ class PostgresContainer {
         this.databaseName = databaseName;
     }
 
-    public String getPostgresHost() {
-        return postgresHost;
+    public String getExposedHost() {
+        return exposedHost;
     }
 
-    public void setPostgresHost(String postgresHost) {
-        this.postgresHost = postgresHost;
+    public void setExposedHost(String exposedHost) {
+        this.exposedHost = exposedHost;
     }
 
     public int getPostgresPort() {
@@ -55,5 +56,13 @@ class PostgresContainer {
 
     public void setPostgresPort(int postgresPort) {
         this.postgresPort = postgresPort;
+    }
+
+    public int getExposedPort() {
+        return exposedPort;
+    }
+
+    public void setExposedPort(int exposedPort) {
+        this.exposedPort = exposedPort;
     }
 }

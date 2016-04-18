@@ -36,7 +36,7 @@ public class EmbeddedPostgresDocker extends ExternalResource {
                     .build();
 
             dockerClient.pull(imageConfig.getContainerImage());
-            this.container = createContainer(dockerClient, String.valueOf(postgresContainer.getPostgresPort()));
+            this.container = createContainer(dockerClient, postgresContainer.getPostgresPort(), postgresContainer.getExposedPort());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -73,8 +73,8 @@ public class EmbeddedPostgresDocker extends ExternalResource {
             throw new RuntimeException(e);
         }
 
-        String host = imageConfig.getPostgresHost();
-        int port = imageConfig.getPostgresPort();
+        String host = imageConfig.getExposedHost();
+        int port = imageConfig.getExposedPort();
         String database = imageConfig.getDatabaseName();
 
         String user = imageConfig.getPostgresUser();
@@ -89,12 +89,9 @@ public class EmbeddedPostgresDocker extends ExternalResource {
         }
     }
 
-    private ContainerCreation createContainer(DockerClient docker, String... exposedPorts) throws Exception {
+    private ContainerCreation createContainer(DockerClient docker, int postgresPort, int exposedPort) throws Exception {
         Map<String, List<PortBinding>> portBindings = new HashMap<>();
-
-        for (String exposedPort : exposedPorts) {
-            portBindings.put(exposedPort, Arrays.asList(PortBinding.of("0.0.0.0", Integer.parseInt(exposedPort))));
-        }
+        portBindings.put(String.valueOf(postgresPort + "/tcp"), Arrays.asList(PortBinding.of("0.0.0.0", exposedPort)));
 
         HostConfig hostConfig = HostConfig.builder()
                 .portBindings(portBindings)
@@ -102,7 +99,7 @@ public class EmbeddedPostgresDocker extends ExternalResource {
 
         ContainerConfig containerConfig = ContainerConfig.builder()
                 .hostConfig(hostConfig)
-                .exposedPorts(exposedPorts)
+                .exposedPorts(postgresPort + "/tcp")
                 .image(imageConfig.getContainerImage())
                 .networkDisabled(false)
                 .build();
@@ -139,12 +136,12 @@ public class EmbeddedPostgresDocker extends ExternalResource {
         return imageConfig.getDatabaseName();
     }
 
-    public String getPostgresHost() {
-        return imageConfig.getPostgresHost();
+    public String getExposedHost() {
+        return imageConfig.getExposedHost();
     }
 
-    public int getPostgresPort() {
-        return imageConfig.getPostgresPort();
+    public int getExposedPort() {
+        return imageConfig.getExposedPort();
     }
 
     public static class Builder {
@@ -155,6 +152,7 @@ public class EmbeddedPostgresDocker extends ExternalResource {
         private static final String DEFAULT_BASE_NAME = "postgres";
         private static final String DEFAULT_POSTGRES_HOST = "127.0.0.1";
         private static final int DEFAULT_POSTGRES_PORT = 5432;
+        private static final int DEFAULT_EXPOSED_PORT = 5432;
 
         private PostgresContainer postgresContainer;
 
@@ -167,8 +165,9 @@ public class EmbeddedPostgresDocker extends ExternalResource {
             postgresContainer.setPostgresUser(DEFAULT_POSTGRES_USER);
             postgresContainer.setPostgresPassword(DEFAULT_POSTGRES_PASSWORD);
             postgresContainer.setDatabaseName(DEFAULT_BASE_NAME);
-            postgresContainer.setPostgresHost(DEFAULT_POSTGRES_HOST);
+            postgresContainer.setExposedHost(DEFAULT_POSTGRES_HOST);
             postgresContainer.setPostgresPort(DEFAULT_POSTGRES_PORT);
+            postgresContainer.setExposedPort(DEFAULT_EXPOSED_PORT);
         }
 
         public Builder setContainerImage(String containerImage) {
@@ -192,12 +191,17 @@ public class EmbeddedPostgresDocker extends ExternalResource {
         }
 
         public Builder setPostgresHost(String postgresHost) {
-            this.postgresContainer.setPostgresHost(postgresHost);
+            this.postgresContainer.setExposedHost(postgresHost);
             return this;
         }
 
         public Builder setPostgresPort(int postgresPort) {
             this.postgresContainer.setPostgresPort(postgresPort);
+            return this;
+        }
+
+        public Builder setExposedPort(int exposedPort) {
+            this.postgresContainer.setExposedPort(exposedPort);
             return this;
         }
 

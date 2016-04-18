@@ -11,11 +11,9 @@ before_install:
   - chmod +x gradlew
 
 install:
-  - netstat -tulpn
   - sudo usermod -aG docker ${USER}
   - docker login --email=$DOCKER_HUB_EMAIL --username=$DOCKER_HUB_USERNAME --password=$DOCKER_HUB_PASSWORD
   - docker version
-  - netstat -tulpn
 
 script:
   - ./gradlew --info check
