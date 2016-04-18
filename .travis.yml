@@ -1,0 +1,46 @@
+language: java
+sudo: false
+
+services:
+  - docker
+
+jdk:
+  - oraclejdk8
+
+before_install:
+  - chmod +x gradlew
+
+install:
+  - netstat -tulpn
+  - sudo usermod -aG docker ${USER}
+  - docker login --email=$DOCKER_HUB_EMAIL --username=$DOCKER_HUB_USERNAME --password=$DOCKER_HUB_PASSWORD
+  - docker version
+  - netstat -tulpn
+
+script:
+  - ./gradlew --info check
+
+after_success:
+  - pip install --user codecov
+  - ./gradlew jacocoTestReport
+  - codecov
+
+after_failure:
+  - netstat -tulpn
+  - sudo cat /var/log/upstart/docker.log
+
+deploy:
+  -
+    provider: script
+    script: ".travis/deploy.sh"
+    skip_cleanup: true
+    on:
+      repo: intappx/junit-docker-postgres
+      branch: master
+  -
+    provider: script
+    script: .travis/deploy.sh
+    skip_cleanup: true
+    on:
+      repo: intappx/junit-docker-postgres
+      tags: true

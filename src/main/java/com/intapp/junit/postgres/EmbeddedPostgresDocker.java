@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Junit external resource to run Embedded postgres container.
+ * It helps you write tests with Junit which require Postgres database.
+ */
 public class EmbeddedPostgresDocker extends ExternalResource {
 
     private final DockerClient dockerClient;
@@ -56,6 +60,12 @@ public class EmbeddedPostgresDocker extends ExternalResource {
         }
     }
 
+
+    /**
+     * Execute sql query
+     * @param sql - SQL query
+     * @return success/failure
+     */
     public boolean executeSQL(String sql) {
         try {
             Class.forName("org.postgresql.Driver");
@@ -148,6 +158,9 @@ public class EmbeddedPostgresDocker extends ExternalResource {
 
         private PostgresContainer postgresContainer;
 
+        /**
+         * Create builder for Postgres container. Initialize default parameters
+         */
         public Builder() {
             postgresContainer = new PostgresContainer();
             postgresContainer.setContainerImage(DEFAULT_CONTAINER);
