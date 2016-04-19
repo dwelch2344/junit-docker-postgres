@@ -1,0 +1,39 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'jacoco'
+}
+
+repositories {
+    mavenCentral();
+}
+
+apply from: rootProject.file('gradle/common.gradle')
+apply from: rootProject.file('gradle/publish.gradle')
+
+dependencies {
+    compile "org.slf4j:slf4j-api:1.7.16"
+
+    compile 'junit:junit:4.12'
+    compile 'com.spotify:docker-client:3.6.8'
+    compile 'org.postgresql:postgresql:9.4.1208.jre7'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.11'
+}
