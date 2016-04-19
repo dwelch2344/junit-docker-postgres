@@ -27,6 +27,10 @@ after_failure:
   - netstat -tulpn
   - sudo cat /var/log/upstart/docker.log
 
+before_deploy:
+  - chmod +x .travis/deploy.sh
+  - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in .travis/secring.gpg.enc -out local.secring.gpg -d
+
 deploy:
   -
     provider: script
