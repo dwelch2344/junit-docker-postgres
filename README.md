@@ -1,6 +1,9 @@
 # Junit Postgres docker resource
 Junit external resource to run Embedded postgres container. It helps you write tests with Junit which require Postgres database.
 
+[![Build Status](https://travis-ci.org/intappx/junit-docker-postgres.svg?branch=master)](https://travis-ci.org/intappx/junit-docker-postgres)
+[![codecov.io](https://codecov.io/github/intappx/junit-docker-postgres/coverage.svg?branch=master)](https://codecov.io/github/intappx/junit-docker-postgres?branch=master)
+
 ## How to start:
 
 ### Requirements: 
