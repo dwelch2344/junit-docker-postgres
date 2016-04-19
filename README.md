@@ -3,6 +3,7 @@ Junit external resource to run Embedded postgres container. It helps you write t
 
 [![Build Status](https://travis-ci.org/intappx/junit-docker-postgres.svg?branch=master)](https://travis-ci.org/intappx/junit-docker-postgres)
 [![codecov.io](https://codecov.io/github/intappx/junit-docker-postgres/coverage.svg?branch=master)](https://codecov.io/github/intappx/junit-docker-postgres?branch=master)
+[![Maven Central](https://img.shields.io/maven-central/v/com.intapp/junit-docker-postgres.svg?maxAge=2592000)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.intapp%22%20AND%20a%3A%22junit-docker-postgres%22)
 
 ## How to start:
 
