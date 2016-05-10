@@ -6,6 +6,8 @@ import com.spotify.docker.client.DockerException;
 import com.spotify.docker.client.messages.*;
 import org.junit.rules.ExternalResource;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -156,6 +158,19 @@ public class EmbeddedPostgresDocker extends ExternalResource {
 
         private PostgresContainer postgresContainer;
 
+        private static String getHost() {
+            String result = DEFAULT_POSTGRES_HOST;
+            try {
+                if (System.getenv("DOCKER_HOST") != null) {
+                    URI dockerLink = new URI(System.getenv("DOCKER_HOST"));
+                    result = dockerLink.getHost() != null ?  dockerLink.getHost(): result;
+                }
+            }  catch (URISyntaxException ex) {
+                //no op
+            }
+            return result;
+        }
+
         /**
          * Create builder for Postgres container. Initialize default parameters
          */
@@ -165,7 +180,7 @@ public class EmbeddedPostgresDocker extends ExternalResource {
             postgresContainer.setPostgresUser(DEFAULT_POSTGRES_USER);
             postgresContainer.setPostgresPassword(DEFAULT_POSTGRES_PASSWORD);
             postgresContainer.setDatabaseName(DEFAULT_BASE_NAME);
-            postgresContainer.setExposedHost(DEFAULT_POSTGRES_HOST);
+            postgresContainer.setExposedHost(getHost());
             postgresContainer.setPostgresPort(DEFAULT_POSTGRES_PORT);
             postgresContainer.setExposedPort(DEFAULT_EXPOSED_PORT);
         }
