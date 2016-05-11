@@ -166,7 +166,7 @@ public class EmbeddedPostgresDocker extends ExternalResource {
                     result = dockerLink.getHost() != null ?  dockerLink.getHost(): result;
                 }
             }  catch (URISyntaxException ex) {
-                //no op
+                throw new RuntimeException(String.format("DOCKER_HOST=%s", System.getenv("DOCKER_HOST")), ex);
             }
             return result;
         }
