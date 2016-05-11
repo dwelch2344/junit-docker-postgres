@@ -158,7 +158,7 @@ public class EmbeddedPostgresDocker extends ExternalResource {
 
         private PostgresContainer postgresContainer;
 
-        private static String getHost() {
+        private String getHost() {
             String result = DEFAULT_POSTGRES_HOST;
             try {
                 if (System.getenv("DOCKER_HOST") != null) {
