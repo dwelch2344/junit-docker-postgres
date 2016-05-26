@@ -14,6 +14,7 @@ public class EmbeddedPostgresDockerTest {
             .setDatabaseName("postgres")
             .setPostgresPassword("")
             .setExposedPort(9547)
+            .setServerStartTimeout(7)
             .build();
 
     @Test

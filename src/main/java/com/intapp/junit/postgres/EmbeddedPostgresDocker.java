@@ -26,10 +26,12 @@ public class EmbeddedPostgresDocker extends ExternalResource {
     private final DockerClient dockerClient;
     private final PostgresContainer imageConfig;
     private final ContainerCreation container;
+    private final int serverStartTimeout;
 
-    private EmbeddedPostgresDocker(PostgresContainer postgresContainer) {
+    private EmbeddedPostgresDocker(PostgresContainer postgresContainer, int serverStartTimeout) {
         try {
             this.imageConfig = postgresContainer;
+            this.serverStartTimeout = serverStartTimeout;
 
             AuthConfig authConfig = AuthConfig.fromDockerConfig().build();
 
@@ -38,7 +40,7 @@ public class EmbeddedPostgresDocker extends ExternalResource {
                     .build();
 
             dockerClient.pull(imageConfig.getContainerImage());
-            this.container = createContainer(dockerClient, postgresContainer.getPostgresPort(), postgresContainer.getExposedPort());
+            this.container = createContainer(dockerClient, imageConfig.getPostgresPort(), imageConfig.getExposedPort());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -113,7 +115,7 @@ public class EmbeddedPostgresDocker extends ExternalResource {
 
         boolean connected = false;
         // Wait only 20 seconds, after that kill container and throw exception
-        for (int i = 0; i < 20 && !connected; i++) {
+        for (int i = 0; i < serverStartTimeout && !connected; i++) {
             try {
                 TimeUnit.SECONDS.sleep(1);
                 connected = this.executeSQL("SELECT 1");
@@ -155,6 +157,7 @@ public class EmbeddedPostgresDocker extends ExternalResource {
         private static final String DEFAULT_POSTGRES_HOST = "127.0.0.1";
         private static final int DEFAULT_POSTGRES_PORT = 5432;
         private static final int DEFAULT_EXPOSED_PORT = 5432;
+        private int serverStartTimeout = 20; //seconds
 
         private PostgresContainer postgresContainer;
 
@@ -220,8 +223,13 @@ public class EmbeddedPostgresDocker extends ExternalResource {
             return this;
         }
 
+        public Builder setServerStartTimeout(int serverStartTimeout) {
+            this.serverStartTimeout =serverStartTimeout;
+            return this;
+        }
+
         public EmbeddedPostgresDocker build() {
-            return new EmbeddedPostgresDocker(postgresContainer);
+            return new EmbeddedPostgresDocker(postgresContainer, serverStartTimeout);
         }
     }
 }
