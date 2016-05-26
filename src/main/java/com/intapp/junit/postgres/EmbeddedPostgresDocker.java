@@ -48,7 +48,6 @@ public class EmbeddedPostgresDocker extends ExternalResource {
     @Override
     protected void before() throws Throwable {
         dockerClient.startContainer(container.id());
-        waitPostgresInitialize();
     }
 
     @Override
@@ -107,23 +106,6 @@ public class EmbeddedPostgresDocker extends ExternalResource {
                 .build();
 
         return docker.createContainer(containerConfig);
-    }
-
-    private void waitPostgresInitialize() {
-
-        boolean connected = false;
-        // Wait only 20 seconds, after that kill container and throw exception
-        for (int i = 0; i < 20 && !connected; i++) {
-            try {
-                TimeUnit.SECONDS.sleep(1);
-                connected = this.executeSQL("SELECT 1");
-            } catch (Exception ignored) {
-            }
-        }
-        if (!connected) {
-            this.after();
-            throw new IllegalStateException();
-        }
     }
 
     public String getPostgresUser() {
